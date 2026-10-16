@@ -8,26 +8,6 @@
 <meta property="og:title" content="월딴">
 <meta property="og:description" content="매달 딴짓이 쌓여, 문샷이 될지도 — 학습 게임 스튜디오 월딴">
 <meta property="og:url" content="https://wolddan.com">
-<link rel="canonical" href="https://wolddan.com/">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "월딴",
-  "alternateName": ["WOLDDAN", "월간 딴짓", "단아스피치랩"],
-  "description": "딴짓이 공부가 되는 게임을 만드는 학습 게임 스튜디오",
-  "url": "https://wolddan.com",
-  "email": "contact@wolddan.com",
-  "founder": {"@type": "Person", "name": "김민영"},
-  "address": {
-    "@type": "PostalAddress",
-    "addressCountry": "KR",
-    "addressRegion": "전북특별자치도",
-    "addressLocality": "전주시",
-    "streetAddress": "덕진구 오공로 123 전북테크비즈센터"
-  }
-}
-</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230B0C0E'/%3E%3Ccircle cx='50' cy='50' r='34' fill='%23F2EFE6'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
@@ -178,12 +158,29 @@ footer{padding-block:clamp(72px,11vh,132px) clamp(44px,7vh,72px);border-top:1px 
 .contact{font-size:clamp(1.25rem,3.4vw,2.4rem);font-weight:700;letter-spacing:-0.02em;margin:26px 0 0}
 .qsmall{color:var(--dim);margin:clamp(36px,6vh,56px) 0 0;max-width:40rem}
 .mailkinds{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
-.mailkinds a{
+.mailkinds .mk{
   display:inline-block;border:1px solid var(--hair);padding:10px 16px;
-  color:var(--ivory);font-size:0.875rem;font-weight:500;
-  transition:border-color 200ms ease,color 200ms ease;border-bottom-width:1px;
+  background:none;color:var(--ivory);font:inherit;font-size:0.875rem;font-weight:500;
+  cursor:pointer;transition:border-color 200ms ease,color 200ms ease;
 }
-.mailkinds a:hover{border-color:var(--gold);color:var(--gold)}
+.mailkinds .mk:hover{border-color:var(--gold);color:var(--gold)}
+.mailkinds .mk[aria-expanded="true"]{border-color:var(--gold);color:var(--gold)}
+.mailpanel{border:1px solid var(--hair);margin-top:14px;padding:clamp(20px,3vw,28px);max-width:44rem}
+.mp-hint{color:var(--dim);font-size:0.875rem;margin:0}
+.mp-list{list-style:none;margin:16px 0 0;padding:0}
+.mp-list li{position:relative;padding-left:18px;margin-top:8px;font-size:0.9375rem;line-height:1.55}
+.mp-list li::before{content:"";position:absolute;left:0;top:0.55em;width:7px;height:7px;
+  border-radius:50%;background:var(--ivory);opacity:0.55}
+.mp-list li em{font-style:normal;color:var(--dim);font-size:0.8125rem;margin-left:6px}
+.mp-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.mp-actions .mp-mail,.mp-actions .mp-copy{
+  display:inline-block;padding:11px 18px;font:inherit;font-size:0.875rem;font-weight:700;cursor:pointer}
+.mp-actions .mp-mail{background:var(--ivory);color:var(--ink);border:1px solid var(--ivory)}
+.mp-actions .mp-mail:hover{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.mp-actions .mp-copy{background:none;color:var(--ivory);border:1px solid var(--hair);
+  transition:border-color 200ms ease,color 200ms ease}
+.mp-actions .mp-copy:hover{border-color:var(--gold);color:var(--gold)}
+.mp-note{color:var(--dim);font-size:0.8125rem;margin:14px 0 0}
 .meta{display:flex;flex-wrap:wrap;gap:8px 32px;margin-top:clamp(28px,4vh,40px);
   font-size:0.875rem;color:var(--dim)}
 
@@ -273,10 +270,19 @@ footer{padding-block:clamp(72px,11vh,132px) clamp(44px,7vh,72px);border-top:1px 
   <footer id="contact">
     <p class="label">함께 딴짓할 일이 있다면</p>
     <p class="contact"><a href="mailto:contact@wolddan.com">contact@wolddan.com</a></p>
-    <div class="mailkinds">
-      <a href="mailto:contact@wolddan.com?subject=%5B%EC%9B%94%EB%94%B4%5D%20%ED%98%91%EC%97%85%C2%B7%EC%A7%80%EC%9B%90%EC%82%AC%EC%97%85%20%EB%AC%B8%EC%9D%98">협업 · 지원사업 문의</a>
-      <a href="mailto:contact@wolddan.com?subject=%5B%EC%9B%94%EB%94%B4%5D%20%ED%95%99%EA%B5%90%C2%B7%EB%8F%84%EC%84%9C%EA%B4%80%C2%B7%EA%B8%B0%EA%B4%80%20%EB%8F%84%EC%9E%85%20%EB%AC%B8%EC%9D%98">학교 · 도서관 · 기관 도입 문의</a>
-      <a href="mailto:contact@wolddan.com?subject=%5B%EC%9B%94%EB%94%B4%5D%20VELA%20%EC%86%8C%EC%8B%9D%20%EC%8B%A0%EC%B2%AD&amp;body=VELA%20%EB%A6%AC%EB%89%B4%EC%96%BC%20%EA%B3%B5%EA%B0%9C%20%EC%86%8C%EC%8B%9D%EC%9D%84%20%EB%B0%9B%EC%95%84%EB%B3%B4%EA%B3%A0%20%EC%8B%B6%EC%8A%B5%EB%8B%88%EB%8B%A4.">VELA 소식 받기</a>
+    <div class="mailkinds" id="mailkinds">
+      <button type="button" class="mk" data-k="collab" aria-expanded="false">협업 · 지원사업 문의</button>
+      <button type="button" class="mk" data-k="edu" aria-expanded="false">학교 · 도서관 · 기관 도입 문의</button>
+      <button type="button" class="mk" data-k="sub" aria-expanded="false">월간 딴짓 받아보기</button>
+    </div>
+    <div class="mailpanel" id="mailpanel" hidden>
+      <p class="mp-hint" id="mp-hint"></p>
+      <ul class="mp-list" id="mp-list"></ul>
+      <div class="mp-actions">
+        <a class="mp-mail" id="mp-mail" href="#">메일 앱으로 쓰기</a>
+        <button type="button" class="mp-copy" id="mp-copy">주소 · 양식 복사</button>
+      </div>
+      <p class="mp-note">메일 앱이 연결되어 있지 않다면, 양식을 복사해 쓰시는 메일함에 붙여넣어 주세요.</p>
     </div>
     <p class="qsmall">천 번의 밤이 쌓이면, 달에 닿지 않을까.</p>
     <div class="meta">
@@ -380,6 +386,115 @@ footer{padding-block:clamp(72px,11vh,132px) clamp(44px,7vh,72px);border-top:1px 
       if (num >= 1) {
         is.textContent = '월간 딴짓 제' + num + '호 · ' + n.getFullYear() + '년 ' + (n.getMonth() + 1) + '월';
       }
+    }
+  } catch (e) {}
+
+  /* 문의 패널 — 종류를 고르면 필수 기재사항과 보내기 수단이 열린다 */
+  try {
+    var MAILTO = 'contact@wolddan.com';
+    var KINDS = {
+      collab: {
+        hint: '아래 내용을 담아 보내주시면 검토 후 이틀 안에 답장드립니다.',
+        subject: '[월딴] 협업·지원사업 문의',
+        items: [
+          ['소속과 담당자 성함', ''],
+          ['회신받을 연락처', '이메일 또는 전화'],
+          ['제안 내용 한 줄 요약', ''],
+          ['협업 형태', '공동개발 · 지원사업 컨소시엄 · 콘텐츠 제휴 등'],
+          ['희망 일정', ''],
+          ['참고 자료 링크', '선택']
+        ]
+      },
+      edu: {
+        hint: '아래 내용을 담아 보내주시면 도입 상담 일정을 잡아 답장드립니다.',
+        subject: '[월딴] 학교·도서관·기관 도입 문의',
+        items: [
+          ['기관명과 담당자 성함', ''],
+          ['회신받을 연락처', '이메일 또는 전화'],
+          ['대상과 규모', '학년 · 인원'],
+          ['관심 프로그램', 'VELA, 학습게임 수업 등'],
+          ['희망 시기', ''],
+          ['예산 범위', '선택']
+        ]
+      },
+      sub: {
+        hint: '빈 메일이어도 좋습니다. 보내주신 주소로 월간 딴짓을 보내드립니다.',
+        subject: '[월딴] 월간 딴짓 구독 신청',
+        items: [
+          ['받아볼 이메일 주소', '보내시는 주소 그대로면 비워두셔도 됩니다']
+        ]
+      }
+    };
+    var panel = document.getElementById('mailpanel');
+    var hintEl = document.getElementById('mp-hint');
+    var listEl = document.getElementById('mp-list');
+    var mailEl = document.getElementById('mp-mail');
+    var copyEl = document.getElementById('mp-copy');
+    var btns = document.querySelectorAll('#mailkinds .mk');
+    if (panel && btns.length) {
+      var current = null;
+      var bodyOf = function(k){
+        var lines = KINDS[k].items.map(function(it){ return '- ' + it[0] + ': '; });
+        return lines.join('\n');
+      };
+      var render = function(k){
+        var d = KINDS[k];
+        hintEl.textContent = d.hint;
+        listEl.innerHTML = '';
+        d.items.forEach(function(it){
+          var li = document.createElement('li');
+          li.textContent = it[0];
+          if (it[1]) {
+            var em = document.createElement('em');
+            em.textContent = it[1];
+            li.appendChild(em);
+          }
+          listEl.appendChild(li);
+        });
+        mailEl.href = 'mailto:' + MAILTO +
+          '?subject=' + encodeURIComponent(d.subject) +
+          '&body=' + encodeURIComponent(bodyOf(k));
+        copyEl.textContent = '주소 · 양식 복사';
+      };
+      btns.forEach(function(b){
+        b.addEventListener('click', function(){
+          var k = b.getAttribute('data-k');
+          if (current === k) {
+            current = null;
+            panel.hidden = true;
+            b.setAttribute('aria-expanded', 'false');
+            return;
+          }
+          current = k;
+          btns.forEach(function(o){ o.setAttribute('aria-expanded', o === b ? 'true' : 'false'); });
+          render(k);
+          panel.hidden = false;
+        });
+      });
+      copyEl.addEventListener('click', function(){
+        if (!current) return;
+        var d = KINDS[current];
+        var text = '받는 주소: ' + MAILTO + '\n제목: ' + d.subject + '\n\n' + bodyOf(current);
+        var done = function(){
+          copyEl.textContent = '복사되었습니다';
+          setTimeout(function(){ copyEl.textContent = '주소 · 양식 복사'; }, 1800);
+        };
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done, function(){});
+          } else {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            done();
+          }
+        } catch (e) {}
+      });
     }
   } catch (e) {}
 
