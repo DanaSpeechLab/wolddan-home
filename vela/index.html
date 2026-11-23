@@ -346,6 +346,7 @@ p,li,dd{max-width:65ch}
 .curri .tag{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .prem{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 8px;border-radius:980px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#1a1408;background:linear-gradient(135deg,#F3DFA2,#D9B65E 55%,#F6E7B8);box-shadow:0 0 14px rgba(230,196,110,.35)}
 .prem svg{width:12px;height:12px}
+@media(min-width:880px){.scene canvas{-webkit-mask-image:linear-gradient(to right,transparent 0,transparent 30%,#000 44%);mask-image:linear-gradient(to right,transparent 0,transparent 30%,#000 44%)}}
 /* 화면에 들어올 때 살짝 떠오름 */
 .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out)}
 .reveal.in{opacity:1;transform:none}
