@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VELA · 월딴</title>
+<meta name="description" content="단어는 아는데 말이 안 나오는 성인을 위한 영어 말하기 게임 VELA, 그리고 게임과 함께하는 1:1 수업 VELA Play.">
+<style>
+/*
+VOICE: 조용한 겨울밤, 어른에게 건네는 차분하고 정직한 말투
+IDEA: 월딴의 달 — 수업 한 번마다 달이 조금씩 차오른다(삭에서 보름까지)
+PICTURE: 큰 달 아래 눈 내리는 마을 앞에 선 VELA 점토 인형들
+COLOUR and TYPE: 월딴 BI '다섯 가지 밤' 중 계절 팔레트(지금은 미드나잇 블루), 강조색은 화면의 5% 이내 / Pretendard 900·700·400
+LAYOUT: 모바일 한 줄 흐름, 넓은 화면에서는 히어로·비교·폼만 2열
+*/
+@font-face{font-family:"Pretendard";src:url("fonts/pretendard-sub.woff2") format("woff2");font-weight:100 900;font-display:swap}
+:root{color-scheme:dark;
+  --bg:#0A1020;--surface:#142039;--ink:#EDF2FA;--accent:#94B8FF;--muted:#A4AFC3;--accent-ink:#0A1020;
+  --line:color-mix(in srgb,var(--ink) 14%,transparent);
+  --pad:20px;--col:1080px}
+:root[data-season=spring]{--bg:#16111D;--surface:#281E32;--ink:#F2EDF6;--accent:#C4ACE6;--muted:#B6AABD;--accent-ink:#16111D}
+:root[data-season=summer]{--bg:#0B1513;--surface:#132822;--ink:#EDF3E8;--accent:#9DCCB5;--muted:#A5B8AD;--accent-ink:#0B1513}
+:root[data-season=autumn]{--bg:#1B1210;--surface:#30201B;--ink:#F5EEE5;--accent:#E5AA8E;--muted:#C0ABA0;--accent-ink:#1B1210}
+:root[data-season=base]{--bg:#0B0C0E;--surface:#111827;--ink:#F2EFE6;--accent:#B8A16A;--muted:#8C8A84;--accent-ink:#0B0C0E}
+:root[data-theme=light],:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 "Pretendard",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:break-word;overflow-x:clip}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.3}
+h1{font-size:clamp(36px,8.4vw,56px);font-weight:900;line-height:1.2;letter-spacing:-.02em}
+h2{font-size:clamp(28px,6vw,40px);font-weight:900;letter-spacing:-.015em}
+h3{font-size:21px;font-weight:700}
+p{margin:0}
+.wrap{max-width:var(--col);margin:0 auto;padding:0 var(--pad)}
+.band{padding:64px 0}
+.band+.band{border-top:1px solid var(--line)}
+.sunk{background:var(--surface)}
+.label{font-size:15px;font-weight:700;color:var(--muted);margin-bottom:12px}
+.lead{font-size:19px;color:var(--ink);margin-top:20px;max-width:34em}
+.note{font-size:14px;color:var(--muted);line-height:1.6}
+.nb{white-space:nowrap}
+.stack>*+*{margin-top:16px}
+
+/* 머리글 */
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:12px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand svg{height:22px;width:auto;color:var(--ink)}
+.brand b{font-size:15px;font-weight:700;color:var(--muted);border-left:1px solid var(--line);padding-left:10px}
+.top nav{margin-left:auto;display:flex;gap:4px}
+.top nav a{font-size:15px;text-decoration:none;color:var(--muted);padding:10px 8px;border-radius:8px}
+.top nav a:hover,.top nav a:focus-visible{color:var(--ink)}
+@media(max-width:560px){.top nav a.opt{display:none}}
+
+/* 버튼 */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 24px;border-radius:12px;font:700 17px/1 inherit;font-family:inherit;text-decoration:none;cursor:pointer;border:1.5px solid transparent;transition:transform .15s,background .15s}
+.btn.pri{background:var(--accent);color:var(--accent-ink)}
+.btn.sec{background:transparent;color:var(--ink);border-color:color-mix(in srgb,var(--ink) 40%,transparent)}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,.top nav a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.btn[aria-disabled=true]{opacity:.45;cursor:not-allowed;transform:none}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.ctas .btn{flex:1 1 220px}
+
+/* 히어로 */
+.hero{padding:40px 0 56px;position:relative;overflow:hidden}
+.hero .wrap{display:grid;gap:36px}
+.scene{position:relative;aspect-ratio:5/4;border-radius:20px;background:var(--surface);overflow:hidden;isolation:isolate}
+.scene .moon{position:absolute;width:44%;aspect-ratio:1;border-radius:50%;background:var(--ink);top:9%;right:9%;box-shadow:0 0 80px 10px color-mix(in srgb,var(--ink) 18%,transparent)}
+.scene .hill{position:absolute;left:-10%;right:-10%;bottom:-38%;height:62%;border-radius:50%;background:color-mix(in srgb,var(--bg) 70%,var(--surface))}
+.scene .row{position:absolute;left:4%;right:4%;bottom:7%;display:flex;align-items:flex-end;justify-content:center;gap:1%}
+.scene .row img{width:23%;filter:drop-shadow(0 10px 10px rgba(0,0,0,.35))}
+.scene .row img:nth-child(2){width:25%}
+.scene canvas{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.cap{font-size:13px;color:var(--muted);margin-top:10px}
+.scene .kv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.maker{font-size:15px;color:var(--muted);margin-top:6px}
+.ico{display:inline-block;width:44px;height:44px}
+.ico svg,.ico img{width:100%;height:100%;object-fit:contain}
+.ico.sm{width:40px;height:40px;margin-bottom:10px}
+.flow .ico{width:44px;height:44px}
+.gallery-wrap{margin-top:44px}
+.gallery{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
+.gallery figure{flex:0 0 84%;scroll-snap-align:start}
+.gallery figure{margin-top:0;margin-bottom:0;margin-left:0;margin-right:0}
+.gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;background:var(--surface)}
+.gallery figcaption{font-size:15px;margin-top:10px}
+@media(min-width:760px){.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}}
+.phones{margin-top:48px}
+.phone-row{display:flex;align-items:flex-start;gap:18px;margin:4px -16px 0;overflow-x:auto;padding:18px 16px 26px;scroll-snap-type:x mandatory;scroll-padding-left:16px}
+.phone-row figure{margin:0;flex:0 0 min(44%,200px);scroll-snap-align:start;text-align:center}
+.phone-row .device{position:relative;padding:7px;border-radius:36px;background:linear-gradient(150deg,rgba(255,255,255,.42),rgba(255,255,255,.08) 38%,rgba(148,184,255,.18) 70%,rgba(255,255,255,.3));box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),0 0 0 1px rgba(10,16,32,.6),0 0 26px rgba(148,184,255,.38),0 0 60px rgba(148,184,255,.16),0 18px 36px rgba(0,0,0,.45)}
+.phone-row .device img{display:block;width:100%;aspect-ratio:390/845;object-fit:cover;border-radius:29px;background:#000}
+.phone-row .device::before{content:"";position:absolute;top:15px;left:50%;transform:translateX(-50%);width:30%;height:4.2%;max-height:22px;border-radius:999px;background:#05070d;box-shadow:0 0 0 1px rgba(255,255,255,.06);z-index:2}
+.phone-row .device::after{content:"";position:absolute;inset:7px;border-radius:29px;background:linear-gradient(125deg,rgba(255,255,255,.28) 0%,rgba(255,255,255,.08) 22%,rgba(255,255,255,0) 40%,rgba(255,255,255,0) 72%,rgba(255,255,255,.1) 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),inset 0 0 18px rgba(148,184,255,.18);pointer-events:none;z-index:3}
+.phone-row figcaption{font-size:14px;color:var(--muted);margin-top:8px}
+.free{display:flex;gap:10px;align-items:center;font-size:15px;color:var(--muted);margin-top:16px}
+@media(min-width:880px){.hero{padding:72px 0 88px}.hero .wrap{grid-template-columns:1.05fr 1fr;align-items:center;gap:56px}}
+
+/* 공감 */
+.lines{margin-top:28px;display:grid;gap:4px}
+.lines p{font-size:clamp(21px,4.6vw,26px);font-weight:700;color:var(--muted)}
+.lines p:last-child{color:var(--ink)}
+.after{margin-top:28px;max-width:36em}
+
+/* 한 판 */
+.steps{list-style:none;margin:36px 0 0;padding:0;display:grid;gap:28px}
+.steps li{display:grid;grid-template-columns:44px 1fr;gap:16px;align-items:start}
+.steps svg{width:44px;height:44px;color:var(--ink)}
+.steps p{color:var(--muted);margin-top:4px}
+.cast{display:flex;gap:12px;margin-top:40px;align-items:flex-end;overflow-x:auto;padding-bottom:4px}
+.cast figure{margin:0;flex:1 0 96px;text-align:center}
+.cast img{height:clamp(150px,20vw,210px);width:auto;margin:0 auto;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3))}
+.cast figcaption{font-size:15px;font-weight:700;margin-top:8px}
+.cast figcaption span{display:block;font-size:13px;font-weight:400;color:var(--muted)}
+@media(min-width:880px){.steps{grid-template-columns:repeat(3,1fr);gap:32px}}
+
+/* 두 가지 길 */
+.paths{display:grid;gap:16px;margin-top:36px}
+.path{border:1px solid var(--line);border-radius:16px;padding:28px 24px;background:var(--bg)}
+.path.play{border-color:color-mix(in srgb,var(--accent) 60%,transparent)}
+.path h3{font-size:24px;font-weight:900}
+.path .who{color:var(--muted);margin-top:6px;font-size:16px}
+.path dl{margin:24px 0 0;display:grid;gap:0}
+.path dl div{display:grid;grid-template-columns:7.5em 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.path dt{color:var(--muted);font-size:15px}
+.path dd{margin:0;font-size:16px}
+.path .btn{width:100%;margin-top:24px}
+@media(min-width:760px){.paths{grid-template-columns:1fr 1fr}}
+
+/* 진행 방식 */
+.week{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:32px}
+.week div{border-radius:10px;padding:12px 6px;text-align:center;background:var(--bg);border:1px solid var(--line)}
+.week b{display:block;font-size:17px}
+.week span{font-size:13px;color:var(--muted)}
+.week .fri{border-color:color-mix(in srgb,var(--accent) 55%,transparent)}
+.split{display:grid;gap:40px;margin-top:44px}
+.split ol{margin:16px 0 0;padding-left:1.3em}
+.split li{padding:6px 0}
+.split li span{color:var(--muted);font-size:15px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.tags span{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:15px}
+@media(min-width:760px){.split{grid-template-columns:1fr 1fr}}
+
+/* 가르치는 사람 */
+.teacher{display:grid;gap:20px;margin-top:28px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.facts div{border-top:2px solid var(--ink);padding-top:12px}
+.facts b{display:block;font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+.facts span{font-size:15px;color:var(--muted)}
+
+/* 시작하는 법 */
+.flow{list-style:none;margin:36px 0 0;padding:0;display:grid;gap:0;counter-reset:f}
+.flow li{display:grid;grid-template-columns:48px 1fr;gap:16px;padding:18px 0;border-top:1px solid var(--line)}
+.flow li:last-child{border-bottom:1px solid var(--line)}
+.flow svg{width:40px;height:40px;color:var(--ink)}
+.flow p{color:var(--muted);font-size:16px;margin-top:2px}
+
+/* 수강권 */
+.passes{display:grid;gap:16px;margin-top:36px}
+.pass{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:24px}
+.pass .name{font-size:22px;font-weight:900}
+.pass .price{font-size:30px;font-weight:900;margin-top:12px}
+.pass .price small{display:block;font-size:14px;font-weight:400;color:var(--muted);margin-top:4px}
+.pass ul{margin:16px 0 0;padding-left:1.1em;color:var(--muted);font-size:16px}
+.pass ul li{padding:3px 0}
+.moons{display:flex;flex-wrap:wrap;gap:4px;margin-top:16px}
+.moons svg{width:18px;height:18px;color:var(--ink)}
+.tiers{margin-top:28px;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.tiers div{display:grid;grid-template-columns:7.2em 1fr;gap:12px;padding:16px 20px}
+.tiers div+div{border-top:1px solid var(--line)}
+.tiers b{font-size:17px}
+.tiers span{color:var(--muted);font-size:16px}
+.payline{margin-top:28px;display:grid;gap:10px}
+@media(min-width:760px){.passes{grid-template-columns:1fr 1fr}}
+
+/* 규칙·환불 */
+.rules{margin-top:32px;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.rules div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:16px;padding:16px 20px}
+.rules div+div{border-top:1px solid var(--line)}
+.rules dt{font-weight:700;font-size:16px}
+.rules dd{margin:0;font-size:16px;color:var(--ink)}
+.rules dd span{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+@media(max-width:520px){.rules div{grid-template-columns:1fr;gap:4px}}
+.legal{margin-top:20px;display:grid;gap:8px}
+
+/* FAQ */
+.faq{margin-top:28px}
+.faq details{border-top:1px solid var(--line)}
+.faq details:last-child{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;padding:20px 36px 20px 0;font-weight:700;font-size:17px;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"";position:absolute;right:6px;top:50%;width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);transition:transform .2s}
+.faq details[open] summary::after{transform:translateY(-30%) rotate(225deg)}
+.faq details p{padding:0 0 20px;color:var(--muted);font-size:16px}
+
+/* 상담 폼 */
+.consult{display:grid;gap:36px}
+form{display:grid;gap:20px}
+.field{display:grid;gap:8px}
+.field label,.field legend{font-weight:700;font-size:16px}
+.field .hint{font-size:14px;color:var(--muted);font-weight:400}
+input[type=text],input[type=tel],select,textarea{width:100%;font:16px/1.5 inherit;font-family:inherit;color:var(--ink);background:var(--bg);border:1.5px solid color-mix(in srgb,var(--ink) 28%,transparent);border-radius:10px;padding:13px 14px;min-height:50px}
+textarea{min-height:96px;resize:vertical}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat}
+.agree{border:1px solid var(--line);border-radius:14px;padding:6px 16px}
+.check{display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:start;padding:12px 0;font-size:16px}
+.check+.check,.agree details+.check{border-top:1px solid var(--line)}
+.check input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--accent)}
+.check em{font-style:normal;font-weight:700;color:var(--accent)}
+.check em.opt{color:var(--muted)}
+.agree details{padding:0 0 12px 36px}
+.agree summary{cursor:pointer;font-size:14px;color:var(--muted);text-decoration:underline;text-underline-offset:3px;padding:4px 0}
+.agree table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+.agree th,.agree td{text-align:left;padding:8px 6px;border-top:1px solid var(--line);vertical-align:top}
+.agree th{color:var(--muted);font-weight:400;width:6.5em}
+.out{border:1px solid var(--accent);border-radius:14px;padding:18px;display:none}
+.out.on{display:block}
+.out pre{white-space:pre-wrap;font:15px/1.6 inherit;font-family:inherit;margin:12px 0;color:var(--muted)}
+.err{color:#FFB4A8;font-size:15px;min-height:1em}
+@media(min-width:880px){.consult{grid-template-columns:.9fr 1.1fr;align-items:start;gap:56px}}
+
+/* 푸터 */
+footer{padding:28px 0 40px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.8;opacity:.55}
+footer svg{height:18px;width:auto;color:var(--muted);margin-bottom:12px}
+footer dl{margin:0}
+footer .bi{display:inline;white-space:nowrap;margin-right:12px}
+footer .bi.wrap{display:block;white-space:normal}
+footer dt,footer dd{display:inline;margin:0}
+footer dt{margin-right:4px}
+footer dd{color:inherit}
+.flinks{display:flex;flex-wrap:wrap;gap:0 16px;margin:10px 0 6px}
+.flinks a{text-decoration:none;color:var(--muted);padding:8px 0;display:inline-block}
+.flinks a.b{font-weight:700}
+.empty{color:var(--muted)!important}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important}.btn:hover{transform:none}}
+.hero .sub{font-size:clamp(18px,2.6vw,24px);font-weight:700;margin:10px 0 0;line-height:1.45;text-wrap:balance}
+@media(min-width:860px){.phone-row{display:grid;grid-template-columns:repeat(3,minmax(0,220px));justify-content:center;column-gap:34px;row-gap:28px;overflow:visible}.phone-row figure{flex:none}}
+.hero .lead{text-wrap:pretty}
+
+/* ===== Apple 스타일 레이어 (2026-11-23) ===== */
+:root{--ease-out:cubic-bezier(.23,1,.32,1);--r-card:28px;--r-sm:18px;--col:1120px}
+body{font-size:17px;line-height:1.6;letter-spacing:-.003em;-webkit-font-smoothing:antialiased}
+h1{font-size:clamp(40px,9vw,80px);line-height:1.06;letter-spacing:-.035em}
+h2{font-size:clamp(30px,5.4vw,52px);line-height:1.12;letter-spacing:-.03em}
+h3{letter-spacing:-.015em}
+.label{font-size:15px;font-weight:600;color:var(--accent);letter-spacing:0;margin-bottom:10px}
+.note{font-size:15px}
+p,li,dd{max-width:65ch}
+
+/* 섹션: 넉넉한 여백, 구분선 대신 면 */
+.band{padding:clamp(80px,11vw,136px) 0}
+.band+.band{border-top:0}
+.band>.wrap>.label,.band>.wrap>h2{text-align:center;margin-left:auto;margin-right:auto}
+.band>.wrap>h2+p.note,.band>.wrap>h2+p.lead,.band>.wrap>h2+p{text-align:center;margin-left:auto;margin-right:auto;font-size:19px;color:var(--muted)}
+
+/* 머리글: 반투명 재질 */
+.top{background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-bottom:0;box-shadow:0 1px 0 color-mix(in srgb,var(--ink) 8%,transparent)}
+.top .wrap{height:52px}
+.top nav a{font-size:14px}
+
+/* 버튼: 알약 모양, 누를 때 줄어듦 */
+.btn{min-height:50px;padding:0 28px;border-radius:980px;font-weight:600;font-size:17px;transition:transform .16s var(--ease-out),background-color .2s var(--ease-out),filter .2s var(--ease-out)}
+.btn:hover{transform:none;filter:brightness(1.08)}
+.btn:active{transform:scale(.97)}
+.btn.sec{border-color:color-mix(in srgb,var(--ink) 30%,transparent)}
+.btn[aria-disabled=true]:active{transform:none}
+
+/* 히어로: 가운데 정렬, 그림은 아래 넓게 */
+.hero{padding:clamp(56px,9vw,112px) 0 clamp(48px,7vw,88px);text-align:center}
+.hero .wrap{display:block}
+.hero .label,.hero .sub,.hero .lead{margin-left:auto;margin-right:auto}
+.hero .sub{margin-top:16px;font-size:clamp(19px,2.4vw,26px);font-weight:600;color:var(--ink)}
+.hero .lead{margin-top:20px;font-size:clamp(17px,1.7vw,20px);color:var(--muted);max-width:30em}
+.hero .lead b{display:block;margin-bottom:4px}
+.ctas{justify-content:center;margin-top:36px}
+.ctas .btn{flex:0 1 auto;min-width:200px}
+.free{justify-content:center;font-size:14px}
+.hero figure{margin-top:clamp(40px,6vw,72px)!important}
+.scene{aspect-ratio:5/4;border-radius:var(--r-card)}
+.scene .kv{object-position:72% 50%}
+@media(min-width:880px){.hero{padding:112px 0 96px}.hero .wrap{display:block}.scene{aspect-ratio:1920/1014}.scene .kv{object-position:50% 50%}}
+
+/* 카드: 크게 둥글게, 테두리 대신 면 */
+.path,.pass,.week div,.tiers,.rules,.agree{border-radius:var(--r-card)}
+.week div{border-radius:var(--r-sm)}
+.path,.pass{border:0;background:color-mix(in srgb,var(--ink) 5%,var(--bg));padding:36px 32px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent)}
+.path.play{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 55%,transparent)}
+.paths,.passes{gap:20px;margin-top:48px}
+.path{display:flex;flex-direction:column}
+.path dl{flex:1 1 auto;align-content:start}
+.path .btn{margin-top:32px}
+.path h3{font-size:28px;letter-spacing:-.02em}
+.gallery img{border-radius:var(--r-sm)}
+.gallery figcaption{font-size:15px;color:var(--muted);text-align:center}
+.gallery-wrap{margin-top:56px}
+.steps{margin-top:48px}
+.steps li{grid-template-columns:48px 1fr}
+.phones{margin-top:72px}
+.phones>h3{text-align:center}
+
+
+.hero p{margin-left:auto;margin-right:auto}
+.hero .lead br{display:none}
+.lines,.after{text-align:center;margin-left:auto;margin-right:auto}
+.lines p{margin-left:auto;margin-right:auto}
+.cap{text-align:center;margin-left:auto;margin-right:auto}
+.flow,.faq{max-width:760px;margin-left:auto;margin-right:auto}
+.week+.note{text-align:center;margin-left:auto;margin-right:auto}
+.lines p{text-wrap:balance}
+.cast+p{text-align:center;margin-left:auto;margin-right:auto}
+
+/* 커리큘럼 시트 */
+.curri-open{display:flex;justify-content:center;margin-top:32px}
+.curri-open .btn span{font-size:13px;font-weight:500;color:var(--muted);margin-left:10px}
+.sheet{border:0;padding:0;margin:auto auto 0;width:min(980px,100%);max-height:92vh;border-radius:var(--r-card) var(--r-card) 0 0;background:color-mix(in srgb,var(--surface) 92%,transparent);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);color:var(--ink);box-shadow:0 -1px 0 color-mix(in srgb,var(--ink) 14%,transparent),0 -20px 60px rgba(0,0,0,.5);overflow:auto;overscroll-behavior:contain}
+.sheet::backdrop{background:rgba(5,8,16,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.sheet[open]{animation:sheet-in .42s var(--ease-out)}
+.sheet[open]::backdrop{animation:fade-in .3s var(--ease-out)}
+@keyframes sheet-in{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+@media(min-width:760px){.sheet{margin:auto;border-radius:var(--r-card)}}
+.sheet-in{padding:28px clamp(20px,4vw,40px) 32px}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sheet-head h2{font-size:clamp(26px,4vw,34px);text-align:left}
+.sheet .x{width:40px;height:40px;border-radius:50%;border:0;background:color-mix(in srgb,var(--ink) 10%,transparent);color:var(--ink);font-size:24px;line-height:1;cursor:pointer;flex:none;transition:transform .16s var(--ease-out)}
+.sheet .x:active{transform:scale(.92)}
+.sheet-lead{color:var(--muted);margin-top:8px}
+.curri{display:grid;gap:16px;margin-top:24px}
+@media(min-width:760px){.curri{grid-template-columns:1fr 1fr}}
+.curri article{border-radius:var(--r-sm);padding:24px;background:color-mix(in srgb,var(--ink) 5%,var(--bg));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent)}
+.curri article.hl{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 50%,transparent)}
+.curri .tag{font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.curri h3{font-size:22px;margin-top:4px}
+.curri dl{margin:16px 0 0}
+.curri dl div{padding:10px 0;border-top:1px solid var(--line)}
+.curri dt{font-size:13px;color:var(--muted)}
+.curri dd{margin:2px 0 0;font-size:15px}
+.sheet-foot{color:var(--muted);font-size:14px;margin-top:20px}
+.sheet .btn.pri{width:100%;margin-top:14px}
+@media(prefers-reduced-motion:reduce){.sheet[open],.sheet[open]::backdrop{animation:none}}
+/* 화면에 들어올 때 살짝 떠오름 */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.btn:active{transform:none}}
+@media(prefers-reduced-transparency:reduce){.top{background:var(--bg);backdrop-filter:none}}
+</style>
+<link rel="canonical" href="https://wolddan.com/vela/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wolddan.com/vela/">
+<meta property="og:title" content="VELA · 영어회화는 게임으로">
+<meta property="og:description" content="상황이 보이면, 말이 나옵니다. 어른도 재밌게 게임하면서 영어 말하기를 연습하는 VELA, 그리고 게임과 함께하는 1:1 수업 VELA Play.">
+<meta property="og:image" content="https://wolddan.com/vela/img/og-share.webp">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="월딴 VELA 처음으로"><svg viewBox="0 0 1000 465" role="img" aria-label="월딴"><path fill="currentColor" fill-rule="evenodd" d="M244.786,93.460L244.666,91.828L244.518,90.198L244.345,88.571L244.144,86.947L243.918,85.327L243.664,83.710L243.385,82.098L243.079,80.491L242.746,78.889L242.388,77.292L242.003,75.702L241.593,74.118L241.156,72.541L240.694,70.972L240.206,69.410L239.693,67.856L239.154,66.311L238.591,64.775L238.002,63.248L237.388,61.732L236.749,60.225L236.086,58.729L235.399,57.244L234.687,55.771L233.952,54.310L233.192,52.860L232.409,51.424L231.603,50.000L230.773,48.590L229.920,47.193L229.045,45.811L228.147,44.443L227.227,43.090L226.285,41.752L225.321,40.430L224.335,39.124L223.329,37.834L222.301,36.561L221.253,35.304L220.184,34.065L219.095,32.844L217.986,31.641L216.858,30.456L215.711,29.289L214.544,28.142L213.359,27.014L212.156,25.905L210.935,24.816L209.696,23.747L208.439,22.699L207.166,21.671L205.876,20.665L204.570,19.679L203.248,18.715L201.910,17.773L200.557,16.853L199.189,15.955L197.807,15.080L196.410,14.227L195.000,13.397L193.576,12.591L192.140,11.808L190.690,11.048L189.229,10.313L187.756,9.601L186.271,8.914L184.775,8.251L183.268,7.612L181.752,6.998L180.225,6.409L178.689,5.846L177.144,5.307L175.590,4.794L174.028,4.306L172.459,3.844L170.882,3.407L169.298,2.997L167.708,2.612L166.111,2.254L164.509,1.921L162.902,1.615L161.290,1.336L159.673,1.082L158.053,0.856L156.429,0.655L154.802,0.482L153.172,0.334L151.540,0.214L149.907,0.120L148.272,0.054L146.636,0.013L145.000,0.000L143.364,0.013L141.728,0.054L140.093,0.120L138.460,0.214L136.828,0.334L135.198,0.482L133.571,0.655L131.947,0.856L130.327,1.082L128.710,1.336L127.098,1.615L125.491,1.921L123.889,2.254L122.292,2.612L120.702,2.997L119.118,3.407L117.541,3.844L115.972,4.306L114.410,4.794L112.856,5.307L111.311,5.846L109.775,6.409L108.248,6.998L106.732,7.612L105.225,8.251L103.729,8.914L102.244,9.601L100.771,10.313L99.310,11.048L97.860,11.808L96.424,12.591L95.000,13.397L93.590,14.227L92.193,15.080L90.811,15.955L89.443,16.853L88.090,17.773L86.752,18.715L85.430,19.679L84.124,20.665L82.834,21.671L81.561,22.699L80.304,23.747L79.065,24.816L77.844,25.905L76.641,27.014L75.456,28.142L74.289,29.289L73.142,30.456L72.014,31.641L70.905,32.844L69.816,34.065L68.747,35.304L67.699,36.561L66.671,37.834L65.665,39.124L64.679,40.430L63.715,41.752L62.773,43.090L61.853,44.443L60.955,45.811L60.080,47.193L59.227,48.590L58.397,50.000L57.591,51.424L56.808,52.860L56.048,54.310L55.313,55.771L54.601,57.244L53.914,58.729L53.251,60.225L52.612,61.732L51.998,63.248L51.409,64.775L50.846,66.311L50.307,67.856L49.794,69.410L49.306,70.972L48.844,72.541L48.407,74.118L47.997,75.702L47.612,77.292L47.254,78.889L46.921,80.491L46.615,82.098L46.336,83.710L46.082,85.327L45.856,86.947L45.655,88.571L45.482,90.198L45.334,91.828L45.214,93.460L45.120,95.093L45.054,96.728L45.013,98.364L45.000,100.000L45.013,101.636L45.054,103.272L45.120,104.907L45.214,106.540L45.334,108.172L45.482,109.802L45.655,111.429L45.856,113.053L46.082,114.673L46.336,116.290L46.615,117.902L46.921,119.509L47.254,121.111L47.612,122.708L47.997,124.298L48.407,125.882L48.844,127.459L49.306,129.028L49.794,130.590L50.307,132.144L50.846,133.689L51.409,135.225L51.998,136.752L52.612,138.268L53.251,139.775L53.914,141.271L54.601,142.756L55.313,144.229L56.048,145.690L56.808,147.140L57.591,148.576L58.397,150.000L59.227,151.410L60.080,152.807L60.955,154.189L61.853,155.557L62.773,156.910L63.715,158.248L64.679,159.570L65.665,160.876L66.671,162.166L67.699,163.439L68.747,164.696L69.816,165.935L70.905,167.156L72.014,168.359L73.142,169.544L74.289,170.711L75.456,171.858L76.641,172.986L77.844,174.095L79.065,175.184L80.304,176.253L81.561,177.301L82.834,178.329L84.124,179.335L85.430,180.321L86.752,181.285L88.090,182.227L89.443,183.147L90.811,184.045L92.193,184.920L93.590,185.773L95.000,186.603L96.424,187.409L97.860,188.192L99.310,188.952L100.771,189.687L102.244,190.399L103.729,191.086L105.225,191.749L106.732,192.388L108.248,193.002L109.775,193.591L111.311,194.154L112.856,194.693L114.410,195.206L115.972,195.694L117.541,196.156L119.118,196.593L120.702,197.003L122.292,197.388L123.889,197.746L125.491,198.079L127.098,198.385L128.710,198.664L130.327,198.918L131.947,199.144L133.571,199.345L135.198,199.518L136.828,199.666L138.460,199.786L140.093,199.880L141.728,199.946L143.364,199.987L145.000,200.000L146.636,199.987L148.272,199.946L149.907,199.880L151.540,199.786L153.172,199.666L154.802,199.518L156.429,199.345L158.053,199.144L159.673,198.918L161.290,198.664L162.902,198.385L164.509,198.079L166.111,197.746L167.708,197.388L169.298,197.003L170.882,196.593L172.459,196.156L174.028,195.694L175.590,195.206L177.144,194.693L178.689,194.154L180.225,193.591L181.752,193.002L183.268,192.388L184.775,191.749L186.271,191.086L187.756,190.399L189.229,189.687L190.690,188.952L192.140,188.192L193.576,187.409L195.000,186.603L196.410,185.773L197.807,184.920L199.189,184.045L200.557,183.147L201.910,182.227L203.248,181.285L204.570,180.321L205.876,179.335L207.166,178.329L208.439,177.301L209.696,176.253L210.935,175.184L212.156,174.095L213.359,172.986L214.544,171.858L215.711,170.711L216.858,169.544L217.986,168.359L219.095,167.156L220.184,165.935L221.253,164.696L222.301,163.439L223.329,162.166L224.335,160.876L225.321,159.570L226.285,158.248L227.227,156.910L228.147,155.557L229.045,154.189L229.920,152.807L230.773,151.410L231.603,150.000L232.409,148.576L233.192,147.140L233.952,145.690L234.687,144.229L235.399,142.756L236.086,141.271L236.749,139.775L237.388,138.268L238.002,136.752L238.591,135.225L239.154,133.689L239.693,132.144L240.206,130.590L240.694,129.028L241.156,127.459L241.593,125.882L242.003,124.298L242.388,122.708L242.746,121.111L243.079,119.509L243.385,117.902L243.664,116.290L243.918,114.673L244.144,113.053L244.345,111.429L244.518,109.802L244.666,108.172L244.786,106.540L244.880,104.907L244.946,103.272L244.987,101.636L245.000,100.000L244.987,98.364L244.946,96.728L244.880,95.093ZM360.000,280.000L447.500,280.000L447.500,0.000L360.000,0.000L360.000,92.500L262.500,92.500L262.500,170.000L360.000,170.000ZM105.000,270.000L105.000,297.500L52.500,297.500L52.500,345.000L105.000,345.000L192.500,345.000L337.500,345.000L337.500,355.000L52.500,355.000L52.500,402.500L52.500,465.000L140.000,465.000L450.000,465.000L450.000,417.500L140.000,417.500L140.000,402.500L337.500,402.500L442.500,402.500L442.500,345.000L442.500,297.500L192.500,297.500L192.500,270.000L325.000,270.000L325.000,205.000L0.000,205.000L0.000,270.000ZM665.000,25.000L520.000,25.000L520.000,102.500L520.000,270.000L597.500,270.000L665.000,270.000L665.000,192.500L597.500,192.500L597.500,102.500L665.000,102.500ZM830.000,25.000L685.000,25.000L685.000,102.500L685.000,270.000L762.500,270.000L830.000,270.000L830.000,192.500L762.500,192.500L762.500,102.500L830.000,102.500ZM850.000,0.000L850.000,345.000L937.500,345.000L937.500,202.500L1000.000,202.500L1000.000,125.000L937.500,125.000L937.500,0.000ZM945.000,465.000L945.000,387.500L625.000,387.500L625.000,305.000L537.500,305.000L537.500,465.000L625.000,465.000Z"/></svg><b>VELA</b></a>
+    <nav aria-label="페이지 안 이동">
+      <a class="opt" href="#how">VELA</a>
+      <a class="opt" href="#play">VELA Play</a>
+      <a href="#refund">환불</a>
+      <a href="#consult">상담</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="label">월딴의 영어 말하기 게임 VELA</p>
+      <h1>영어회화는 게임으로</h1>
+      <p class="sub">어른도 재밌게 게임하면서 공부할 수 있도록</p>
+      <p class="lead"><b style="color:var(--ink)">상황이 보이면, 말이 나옵니다.</b><br>여러 가지 상황에 몰입해 말하다 보면, 하고 싶은 말을 영어로 하게 됩니다.</p>
+      <div class="ctas">
+        <a class="btn pri" id="cta-game" aria-disabled="true">VELA 시작하기</a>
+        <a class="btn sec" href="#consult">VELA Play 상담 신청</a>
+      </div>
+      <p class="free"><span>지금 베타 테스터를 모집하고 있습니다.</span></p>
+    </div>
+    <figure style="margin:0">
+      <div class="scene" role="img" aria-label="겨울밤 VELA 게스트하우스와 점토 인형들">
+        <div class="moon"></div><div class="hill"></div>
+        <img class="kv" src="img/kv-hero.webp" alt="" data-kv>
+        <div class="row">
+          <img src="img/yoon.webp" alt="" width="250" height="560">
+          <img src="img/pf.webp" alt="" width="247" height="560">
+          <img src="img/marina.webp" alt="" width="258" height="560">
+          <img src="img/emma.webp" alt="" width="284" height="560">
+        </div>
+        <canvas id="snow" aria-hidden="true"></canvas>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<section class="band sunk">
+  <div class="wrap">
+    <h2>첫마디가 막힌 건,<br>처음 겪는 장면이라서입니다</h2>
+    <div class="lines">
+      <p>단어는 이미 충분히 압니다.</p>
+      <p>문법 설명도 여러 번 들었습니다.</p>
+      <p>그런데 외국인 앞에서는 첫마디가 안 나옵니다.</p>
+    </div>
+    <p class="after">한 번 지내 본 장면에서는 말이 나옵니다. VELA는 그 장면을 게임에서 먼저 지내 보게 합니다. 손님이 무엇을 원하는지 읽고, 그 자리에서 할 말을 직접 꺼냅니다.</p>
+  </div>
+</section>
+
+<section class="band" id="how">
+  <div class="wrap">
+    <p class="label">VELA</p>
+    <h2>오늘은 어떤 손님이 올까요</h2>
+    <p class="note" style="max-width:34em;margin-top:10px;font-size:17px">게스트하우스에는 날마다 다른 일이 생깁니다. 상황을 알아차리고 영어로 풀어 가면 하루가 끝납니다.</p>
+    <ol class="steps">
+      <li><span class="ico" data-moon="1" data-icon="key"></span><div><h3>상황이 생깁니다</h3><p>늦은 밤 체크인, 길을 묻는 손님, 마루에서 나누는 이야기.</p></div></li>
+      <li><span class="ico" data-moon="2" data-icon="mic"></span><div><h3>영어로 풀어 갑니다</h3><p>소리 내어 대답해야 다음 장면으로 넘어갑니다.</p></div></li>
+      <li><span class="ico" data-moon="3" data-icon="hint"></span><div><h3>막히면 마리나가 돕습니다</h3><p>힌트는 받아도, 마지막 한마디는 직접 말합니다.</p></div></li>
+    </ol>
+    <div class="gallery-wrap" data-optgroup>
+    <div class="gallery">
+      <figure data-optbox><img data-opt src="img/scene-01.webp" alt="비 오는 밤 현관 밖에 선 젖은 손님을 맞는 장면" width="800" height="600" loading="lazy"><figcaption>비 오는 밤, 늦게 도착한 손님을 맞습니다</figcaption></figure>
+      <figure data-optbox><img data-opt src="img/scene-02.webp" alt="길을 묻는 손님 나디아에게 방향을 알려 주는 장면" width="800" height="600" loading="lazy"><figcaption>터미널 가는 길을 묻는 손님에게 길을 알려 줍니다</figcaption></figure>
+      <figure data-optbox><img data-opt src="img/scene-03.webp" alt="짐을 푼 손님 루카스가 마루에 앉아 따뜻한 차를 들고 웃는 장면" width="800" height="600" loading="lazy"><figcaption>짐을 푼 손님과 마루에 앉아 이야기합니다</figcaption></figure>
+    </div>
+    </div>
+    <div class="phones" data-optgroup>
+      <h3>실제 베타 화면</h3>
+      <div class="phone-row">
+        <figure data-optbox><div class="device"><img data-opt src="img/play-04.webp" alt="내 방에서 이번 주를 이어서 하는 VELA 홈 화면" width="390" height="845" loading="lazy"></div><figcaption>내 방</figcaption></figure>
+        <figure data-optbox><div class="device"><img data-opt src="img/play-05.webp" alt="평일 알바와 주말 나들이를 고르는 한 달 계획 화면" width="390" height="845" loading="lazy"></div><figcaption>한 달 계획 세우기</figcaption></figure>
+        <figure data-optbox><div class="device"><img data-opt src="img/play-06.webp" alt="전주 한옥마을 동네 지도 화면" width="390" height="845" loading="lazy"></div><figcaption>동네 지도</figcaption></figure>
+        <figure data-optbox><div class="device"><img data-opt src="img/play-01.webp" alt="손님 대화와 마이크 버튼이 보이는 VELA 화면" width="390" height="845" loading="lazy"></div><figcaption>대화 이어가기</figcaption></figure>
+        <figure data-optbox><div class="device"><img data-opt src="img/play-02.webp" alt="대답 뒤 능력치가 오른 알림이 뜬 VELA 화면" width="390" height="845" loading="lazy"></div><figcaption>대답하면 오르는 능력치</figcaption></figure>
+        <figure data-optbox><div class="device"><img data-opt src="img/play-03.webp" alt="하루를 마치고 결과를 보여 주는 VELA 화면" width="390" height="845" loading="lazy"></div><figcaption>하루 마치기</figcaption></figure>
+      </div>
+      <p class="cap">베타 기간의 화면이라 업데이트로 바뀔 수 있습니다.</p>
+    </div>
+    <div class="cast" aria-label="VELA에서 만나는 인물">
+      <figure><img src="img/yoon.webp" alt="윤 여사 점토 인형" width="250" height="560" loading="lazy"><figcaption>윤 여사<span>게스트하우스</span></figcaption></figure>
+      <figure><img src="img/marina.webp" alt="마리나 점토 인형" width="258" height="560" loading="lazy"><figcaption>마리나<span>도움을 주는 친구</span></figcaption></figure>
+      <figure><img src="img/emma.webp" alt="엠마 점토 인형" width="284" height="560" loading="lazy"><figcaption>엠마<span>손님</span></figcaption></figure>
+      <figure><img src="img/pm.webp" alt="플레이어 점토 인형" width="233" height="560" loading="lazy"><figcaption>나<span>플레이어</span></figcaption></figure>
+    </div>
+    <p class="note" style="margin-top:20px">베타 기간에는 일부 날짜만 열려 있습니다. 새 날짜는 순서대로 추가됩니다.</p>
+  </div>
+</section>
+
+<section class="band sunk" id="play">
+  <div class="wrap">
+    <p class="label">혼자, 또는 함께</p>
+    <h2>두 가지 방법으로 시작합니다</h2>
+    <div class="paths">
+      <article class="path">
+        <h3>VELA</h3>
+        <p class="who">내 속도로 매일 한 판씩 하고 싶은 분</p>
+        <dl>
+          <div><dt>하는 것</dt><dd>게임 속 하루를 지내며 말하기</dd></div>
+          <div><dt>도움</dt><dd>마리나 힌트</dd></div>
+          <div><dt>필요한 것</dt><dd>휴대폰 · 사파리 또는 크롬</dd></div>
+          <div><dt>지금</dt><dd>베타 테스터 모집 중</dd></div>
+        </dl>
+        <a class="btn sec" id="cta-game2" aria-disabled="true">VELA 시작하기</a>
+      </article>
+      <article class="path play">
+        <h3>VELA Play</h3>
+        <p class="who">선생님과 같이 말문을 트고 싶은 분</p>
+        <dl>
+          <div><dt>하는 것</dt><dd>게임 + 1:1 화상 수업 30분, 회차권</dd></div>
+          <div><dt>일정</dt><dd>평일 중 원하는 때, 100일 안에</dd></div>
+          <div><dt>수업 내용</dt><dd>게임 속 그날의 장면 그대로</dd></div>
+          <div><dt>복습</dt><dd>로그북 앱 · 운전 중 듣는 오디오</dd></div>
+          <div><dt>비용</dt><dd>상담 후 안내</dd></div>
+        </dl>
+        <a class="btn pri" href="#consult">20분 무료 상담 신청</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <p class="label">VELA Play 진행 방식</p>
+    <h2>수업 한 번에<br>게임 속 하루 하나씩</h2>
+    <div class="week" aria-label="다섯 회차 한 묶음">
+      <div><b>1회</b><span>DAY</span></div><div><b>2회</b><span>DAY</span></div><div><b>3회</b><span>DAY</span></div><div><b>4회</b><span>DAY</span></div><div class="fri"><b>5회</b><span>DRILL</span></div>
+    </div>
+    <p class="note" style="margin-top:12px">네 번은 새 장면에서 표현 4개씩 배우고, 다섯 번째 DRILL에서 앞의 네 장면을 다시 말해 봅니다. 수업 날짜와 시간은 회차마다 정하니, 일주일에 몇 번 들을지는 정하시기 나름입니다.</p>
+    <div class="split">
+      <div>
+        <span class="ico sm" data-moon="2" data-icon="lesson"></span>
+        <h3>30분은 이렇게 흐릅니다</h3>
+        <ol>
+          <li>지난 시간 복습 <span>5분</span></li>
+          <li>오늘의 표현 4개 <span>단어를 바꿔 가며 말하기</span></li>
+          <li>장면 대화 <span>대본 보고 → 빈칸 → 안 보고</span></li>
+          <li>수업 중 다시 복습 <span>한 번으로 끝내지 않기</span></li>
+          <li>빙고로 마무리 <span>오늘 배운 9개</span></li>
+        </ol>
+      </div>
+      <div>
+        <span class="ico sm" data-moon="4" data-icon="logbook"></span>
+        <h3>수업이 끝나면 로그북으로</h3>
+        <p style="color:var(--muted);margin-top:12px;font-size:16px">그날 배운 문장과 단어 10개가 휴대폰 복습으로 바로 들어옵니다. 출퇴근길에는 화면을 보지 않고 듣고 따라 말할 수 있습니다.</p>
+        <div class="tags"><span>표현</span><span>대화</span><span>단어 10개</span><span>Review for CAR driver</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band sunk">
+  <div class="wrap">
+    <p class="label">VELA Play 시작하는 법</p>
+    <h2>상담부터 첫 수업까지 네 걸음</h2>
+    <ol class="flow">
+      <li><span class="ico" data-moon="0" data-icon="consult"></span><div><h3>20분 무료 상담</h3><p>영어로 막혔던 장면과 원하는 수업 시간을 듣습니다. 구글 밋 화상, 전화, 카카오톡 중 편한 방법으로 합니다.</p></div></li>
+      <li><span class="ico" data-moon="1" data-icon="trial"></span><div><h3>체험 수업</h3><p>실제 수업 그대로 한 번 해 보고, 지금 되는 것과 막히는 곳을 세 줄로 정리해 드립니다.</p></div></li>
+      <li><span class="ico" data-moon="2" data-icon="pass"></span><div><h3>수강권 결제</h3><p>10회 또는 20회 중 고릅니다. 결제 직후 계약 내용과 환불 규칙을 이메일로 보내 드립니다.</p></div></li>
+      <li><span class="ico" data-moon="4" data-icon="bag"></span><div><h3>게임 가방에 수강권 도착</h3><p>VELA 가방에 수강권이 들어오고, 수업 한 번에 한 장씩 씁니다.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band" id="pass">
+  <div class="wrap">
+    <p class="label">수강권</p>
+    <h2>한 번 수업할 때마다 달이 차오릅니다</h2>
+    <div class="passes">
+      <div class="pass">
+        <p class="name">10회 수강권</p>
+        <p class="price">상담 후 안내<small>평일 30분 × 10회 · 선불</small></p>
+        <div class="moons" data-count="10" aria-hidden="true"></div>
+        <ul><li>VELA 이용 포함</li><li>로그북 복습 포함</li><li>유효기간 : <span data-cfg="validity10"></span></li></ul>
+      </div>
+      <div class="pass">
+        <p class="name">20회 수강권</p>
+        <p class="price">상담 후 안내<small>평일 30분 × 20회 + 1회 더 · 선불</small></p>
+        <div class="moons" data-count="21" aria-hidden="true"></div>
+        <ul><li>VELA 이용 포함</li><li>로그북 복습 포함</li><li>유효기간 : <span data-cfg="validity20"></span></li></ul>
+      </div>
+    </div>
+    <div class="curri-open"><button type="button" class="btn sec" id="curri-btn">커리큘럼 안내 <span aria-hidden="true">BASIC · CUSTOMIZED</span></button></div>
+    <dialog class="sheet" id="curri" aria-labelledby="curri-t">
+      <div class="sheet-in">
+        <div class="sheet-head"><h2 id="curri-t">커리큘럼 안내</h2><button type="button" class="x" data-close aria-label="닫기">×</button></div>
+        <p class="sheet-lead">두 과정 모두 30분 1:1 화상 수업이고, 수강권(10회·20회)은 같습니다. 무엇으로 수업하느냐가 다릅니다.</p>
+        <div class="curri">
+          <article>
+            <p class="tag">BASIC</p>
+            <h3>게임 속 그날의 장면으로</h3>
+            <dl>
+              <div><dt>이런 분께</dt><dd>VELA를 하면서, 막힌 장면을 선생님과 같이 풀고 싶은 분</dd></div>
+              <div><dt>수업 자료</dt><dd>VELA에서 그날 지난 장면(DAY)을 그대로 씁니다. 게임에서 만난 손님, 같은 대사로 연습합니다.</dd></div>
+              <div><dt>진행</dt><dd>새 장면 4회 + 다시 말하기(DRILL) 1회가 한 묶음입니다.</dd></div>
+              <div><dt>30분 구성</dt><dd>지난 시간 복습 → 오늘의 표현 4개 → 장면 대화(대본 보고 → 빈칸 → 안 보고) → 다시 복습 → 빙고</dd></div>
+              <div><dt>복습</dt><dd>수업이 끝나면 그날 문장과 단어가 로그북 앱으로 들어오고, 운전 중에는 듣고 따라 말할 수 있습니다.</dd></div>
+            </dl>
+          </article>
+          <article class="hl">
+            <p class="tag">CUSTOMIZED</p>
+            <h3>내 업무·생활 장면으로</h3>
+            <dl>
+              <div><dt>이런 분께</dt><dd>써야 할 장면이 이미 정해진 분. 예) 해외 거래처 통화, 출장, 외국인 손님 응대, 여행</dd></div>
+              <div><dt>수업 자료</dt><dd>상담에서 들은 내 장면으로 대화문과 표현을 따로 만듭니다.</dd></div>
+              <div><dt>진행</dt><dd>BASIC과 같은 틀(표현 4개 · 장면 대화 · 다시 복습)에 내 장면을 넣습니다.</dd></div>
+              <div><dt>30분 구성</dt><dd>BASIC과 같습니다. 장면만 내 것으로 바뀝니다.</dd></div>
+              <div><dt>복습</dt><dd>내 장면의 문장도 로그북 앱으로 들어옵니다.</dd></div>
+            </dl>
+          </article>
+        </div>
+        <p class="sheet-foot">어느 쪽이 맞을지는 20분 무료 상담에서 같이 정합니다. 비용은 상담 후 안내해 드립니다.</p>
+        <a class="btn pri" href="#consult" data-close>20분 무료 상담 신청</a>
+      </div>
+    </dialog>
+    <div class="payline">
+      <a class="btn sec" id="cta-pay" aria-disabled="true">카드로 결제하기</a>
+      <p class="note" id="pay-note"></p>
+    </div>
+  </div>
+</section>
+
+<section class="band sunk" id="refund">
+  <div class="wrap">
+    <p class="label">결제 전에 꼭 읽어 주세요</p>
+    <h2>진행 규칙과 환불</h2>
+    <dl class="rules">
+      <div><dt>사용 기간</dt><dd>10회·20회 모두 결제한 날부터 100일 안에 씁니다.<span>100일 안에 다 쓰기 어려울 것 같으면, 100일이 지나기 전에 환불을 요청해 주세요. 남은 회차를 아래 기준으로 돌려 드립니다.</span></dd></div>
+      <div><dt>첫 수업 전</dt><dd>언제든 전액 환불합니다.</dd></div>
+      <div><dt>수업을 일부 들은 뒤</dt><dd>남은 회차만큼 환불합니다.<span>환불액 = 결제 금액 × 남은 회차 ÷ 전체 회차. 예) 10회를 30만 원에 결제하고 3회를 들었다면 21만 원. 20회 수강권의 1회 더는 맨 마지막 회차로 셉니다.</span></dd></div>
+      <div><dt>위약금</dt><dd>받지 않습니다.<span>들은 회차 값만 빼고 돌려 드립니다.</span></dd></div>
+      <div><dt>저희 사정으로 수업을 못 하게 되면</dt><dd>남은 회차 금액을 전부 돌려 드립니다.</dd></div>
+      <div><dt>수업 시간 변경</dt><dd>수업 시작 24시간 전까지 알려 주시면 다른 시간으로 옮깁니다.</dd></div>
+      <div><dt>수업 안내</dt><dd>수업 25시간 전에, 가입할 때 인증한 이메일로 수업 안내를 보내 드립니다.<span>날짜·시간·접속 링크가 들어 있고, 바꾸거나 취소하려면 이때 알려 주세요.</span></dd></div>
+      <div><dt>24시간 이내 변경·취소, 불참</dt><dd>그 회차는 환불되지 않습니다.<span>수업 시작 24시간 전부터는 취소하셔도 수강권 1회를 쓴 것으로 하고, 환불할 때도 들은 회차로 셉니다.</span></dd></div>
+      <div><dt>환불 처리</dt><dd>요청을 받은 날부터 3영업일 안에, 결제한 수단으로 돌려 드립니다.</dd></div>
+      <div><dt>환불 요청 방법</dt><dd>이메일 <span class="nb" style="display:inline;color:var(--ink);font-size:16px">contact@wolddan.com</span><span>받은 날짜가 남도록 글로 요청해 주세요.</span></dd></div>
+    </dl>
+    <div class="legal note">
+      <p>청약철회 기간 7일은 계약 내용을 이메일로 받은 날부터 셉니다.</p>
+      <p>VELA Play 결제는 게임 안 재화와 별개입니다. 게임 재화로 수강권을 사지 않으며, 수강권은 원화로만 결제합니다.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <h2>자주 묻는 질문</h2>
+    <div class="faq">
+      <details><summary>영어를 거의 못해도 되나요?</summary><p>쉬운 단어를 조금 아는 초중급 성인에 맞춰 만들었습니다. 상담 때 한두 문장 나눠 보고 맞는지 함께 정합니다.</p></details>
+      <details><summary>휴대폰으로 되나요?</summary><p>네. 아이폰과 안드로이드에서 사파리나 크롬으로 엽니다. 카카오톡 안에서 링크를 열면 마이크가 막힐 수 있으니 사파리나 크롬으로 열어 주세요.</p></details>
+      <details><summary>VELA만 해도 되나요?</summary><p>네. VELA는 혼자 할 수 있게 만든 게임입니다. 수업은 원하는 분만 신청합니다.</p></details>
+      <details><summary>수업 시간은 어떻게 정하나요?</summary><p>상담 때 평일 중 고정 시간을 정하고 구글 캘린더로 초대를 보냅니다. 수업은 구글 밋으로 합니다.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="band sunk" id="consult">
+  <div class="wrap consult">
+    <div>
+      <p class="label">VELA Play</p>
+      <h2>20분 무료 상담 신청</h2>
+      <p class="lead" style="font-size:17px">영어로 말문이 막혔던 장면 하나만 적어 주세요. 상담은 그 장면부터 시작합니다.</p>
+      <p class="note" style="margin-top:16px">만 19세 이상 성인을 대상으로 합니다.</p>
+    </div>
+    <div>
+      <form id="f" novalidate>
+        <div class="field"><label for="nm">이름</label><input id="nm" type="text" autocomplete="name" required></div>
+        <div class="field"><label for="ph">휴대폰 번호</label><input id="ph" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" required></div>
+        <div class="field"><label for="tm">상담 희망 시간</label>
+          <select id="tm" required><option value="">고르세요</option><option>평일 오전</option><option>평일 오후</option><option>평일 저녁</option><option>토요일</option></select></div>
+        <div class="field"><label for="sc">말문이 막혔던 장면 <span class="hint">(선택)</span></label><textarea id="sc" placeholder="예: 회사에 온 외국 손님에게 길을 알려 줘야 했는데 첫마디가 안 나왔어요."></textarea></div>
+        <div class="agree">
+          <label class="check"><input type="checkbox" id="a19" required><span><em>[필수]</em> 만 19세 이상입니다.</span></label>
+          <label class="check"><input type="checkbox" id="apv" required><span><em>[필수]</em> 상담을 위한 개인정보 수집·이용에 동의합니다.</span></label>
+          <details><summary>내용 보기</summary>
+            <table>
+              <tr><th>수집 항목</th><td>이름, 휴대폰 번호, 상담 희망 시간, 적어 주신 장면</td></tr>
+              <tr><th>목적</th><td>VELA Play 상담 일정 안내와 상담 진행</td></tr>
+              <tr><th>보관 기간</th><td data-cfg="retention"></td></tr>
+              <tr><th>거부할 권리</th><td>동의하지 않을 수 있습니다. 동의하지 않으면 온라인 상담 신청은 할 수 없고, 이메일로 직접 문의하실 수 있습니다.</td></tr>
+            </table>
+          </details>
+          <label class="check"><input type="checkbox" id="amk"><span><em class="opt">[선택]</em> 새 날짜와 수업 소식을 문자로 받겠습니다. 동의하지 않아도 상담에는 영향이 없습니다.</span></label>
+        </div>
+        <p class="err" id="err" role="alert"></p>
+        <button class="btn pri" type="submit">상담 신청하기</button>
+      </form>
+      <div class="out" id="out" role="status">
+        <b>신청 내용이 준비되었습니다</b>
+        <p class="note" id="out-msg" style="margin-top:6px"></p>
+        <pre id="out-text"></pre>
+        <button class="btn sec" type="button" id="copy">내용 복사하기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <svg viewBox="0 0 1000 465" role="img" aria-label="월딴"><path fill="currentColor" fill-rule="evenodd" d="M244.786,93.460L244.666,91.828L244.518,90.198L244.345,88.571L244.144,86.947L243.918,85.327L243.664,83.710L243.385,82.098L243.079,80.491L242.746,78.889L242.388,77.292L242.003,75.702L241.593,74.118L241.156,72.541L240.694,70.972L240.206,69.410L239.693,67.856L239.154,66.311L238.591,64.775L238.002,63.248L237.388,61.732L236.749,60.225L236.086,58.729L235.399,57.244L234.687,55.771L233.952,54.310L233.192,52.860L232.409,51.424L231.603,50.000L230.773,48.590L229.920,47.193L229.045,45.811L228.147,44.443L227.227,43.090L226.285,41.752L225.321,40.430L224.335,39.124L223.329,37.834L222.301,36.561L221.253,35.304L220.184,34.065L219.095,32.844L217.986,31.641L216.858,30.456L215.711,29.289L214.544,28.142L213.359,27.014L212.156,25.905L210.935,24.816L209.696,23.747L208.439,22.699L207.166,21.671L205.876,20.665L204.570,19.679L203.248,18.715L201.910,17.773L200.557,16.853L199.189,15.955L197.807,15.080L196.410,14.227L195.000,13.397L193.576,12.591L192.140,11.808L190.690,11.048L189.229,10.313L187.756,9.601L186.271,8.914L184.775,8.251L183.268,7.612L181.752,6.998L180.225,6.409L178.689,5.846L177.144,5.307L175.590,4.794L174.028,4.306L172.459,3.844L170.882,3.407L169.298,2.997L167.708,2.612L166.111,2.254L164.509,1.921L162.902,1.615L161.290,1.336L159.673,1.082L158.053,0.856L156.429,0.655L154.802,0.482L153.172,0.334L151.540,0.214L149.907,0.120L148.272,0.054L146.636,0.013L145.000,0.000L143.364,0.013L141.728,0.054L140.093,0.120L138.460,0.214L136.828,0.334L135.198,0.482L133.571,0.655L131.947,0.856L130.327,1.082L128.710,1.336L127.098,1.615L125.491,1.921L123.889,2.254L122.292,2.612L120.702,2.997L119.118,3.407L117.541,3.844L115.972,4.306L114.410,4.794L112.856,5.307L111.311,5.846L109.775,6.409L108.248,6.998L106.732,7.612L105.225,8.251L103.729,8.914L102.244,9.601L100.771,10.313L99.310,11.048L97.860,11.808L96.424,12.591L95.000,13.397L93.590,14.227L92.193,15.080L90.811,15.955L89.443,16.853L88.090,17.773L86.752,18.715L85.430,19.679L84.124,20.665L82.834,21.671L81.561,22.699L80.304,23.747L79.065,24.816L77.844,25.905L76.641,27.014L75.456,28.142L74.289,29.289L73.142,30.456L72.014,31.641L70.905,32.844L69.816,34.065L68.747,35.304L67.699,36.561L66.671,37.834L65.665,39.124L64.679,40.430L63.715,41.752L62.773,43.090L61.853,44.443L60.955,45.811L60.080,47.193L59.227,48.590L58.397,50.000L57.591,51.424L56.808,52.860L56.048,54.310L55.313,55.771L54.601,57.244L53.914,58.729L53.251,60.225L52.612,61.732L51.998,63.248L51.409,64.775L50.846,66.311L50.307,67.856L49.794,69.410L49.306,70.972L48.844,72.541L48.407,74.118L47.997,75.702L47.612,77.292L47.254,78.889L46.921,80.491L46.615,82.098L46.336,83.710L46.082,85.327L45.856,86.947L45.655,88.571L45.482,90.198L45.334,91.828L45.214,93.460L45.120,95.093L45.054,96.728L45.013,98.364L45.000,100.000L45.013,101.636L45.054,103.272L45.120,104.907L45.214,106.540L45.334,108.172L45.482,109.802L45.655,111.429L45.856,113.053L46.082,114.673L46.336,116.290L46.615,117.902L46.921,119.509L47.254,121.111L47.612,122.708L47.997,124.298L48.407,125.882L48.844,127.459L49.306,129.028L49.794,130.590L50.307,132.144L50.846,133.689L51.409,135.225L51.998,136.752L52.612,138.268L53.251,139.775L53.914,141.271L54.601,142.756L55.313,144.229L56.048,145.690L56.808,147.140L57.591,148.576L58.397,150.000L59.227,151.410L60.080,152.807L60.955,154.189L61.853,155.557L62.773,156.910L63.715,158.248L64.679,159.570L65.665,160.876L66.671,162.166L67.699,163.439L68.747,164.696L69.816,165.935L70.905,167.156L72.014,168.359L73.142,169.544L74.289,170.711L75.456,171.858L76.641,172.986L77.844,174.095L79.065,175.184L80.304,176.253L81.561,177.301L82.834,178.329L84.124,179.335L85.430,180.321L86.752,181.285L88.090,182.227L89.443,183.147L90.811,184.045L92.193,184.920L93.590,185.773L95.000,186.603L96.424,187.409L97.860,188.192L99.310,188.952L100.771,189.687L102.244,190.399L103.729,191.086L105.225,191.749L106.732,192.388L108.248,193.002L109.775,193.591L111.311,194.154L112.856,194.693L114.410,195.206L115.972,195.694L117.541,196.156L119.118,196.593L120.702,197.003L122.292,197.388L123.889,197.746L125.491,198.079L127.098,198.385L128.710,198.664L130.327,198.918L131.947,199.144L133.571,199.345L135.198,199.518L136.828,199.666L138.460,199.786L140.093,199.880L141.728,199.946L143.364,199.987L145.000,200.000L146.636,199.987L148.272,199.946L149.907,199.880L151.540,199.786L153.172,199.666L154.802,199.518L156.429,199.345L158.053,199.144L159.673,198.918L161.290,198.664L162.902,198.385L164.509,198.079L166.111,197.746L167.708,197.388L169.298,197.003L170.882,196.593L172.459,196.156L174.028,195.694L175.590,195.206L177.144,194.693L178.689,194.154L180.225,193.591L181.752,193.002L183.268,192.388L184.775,191.749L186.271,191.086L187.756,190.399L189.229,189.687L190.690,188.952L192.140,188.192L193.576,187.409L195.000,186.603L196.410,185.773L197.807,184.920L199.189,184.045L200.557,183.147L201.910,182.227L203.248,181.285L204.570,180.321L205.876,179.335L207.166,178.329L208.439,177.301L209.696,176.253L210.935,175.184L212.156,174.095L213.359,172.986L214.544,171.858L215.711,170.711L216.858,169.544L217.986,168.359L219.095,167.156L220.184,165.935L221.253,164.696L222.301,163.439L223.329,162.166L224.335,160.876L225.321,159.570L226.285,158.248L227.227,156.910L228.147,155.557L229.045,154.189L229.920,152.807L230.773,151.410L231.603,150.000L232.409,148.576L233.192,147.140L233.952,145.690L234.687,144.229L235.399,142.756L236.086,141.271L236.749,139.775L237.388,138.268L238.002,136.752L238.591,135.225L239.154,133.689L239.693,132.144L240.206,130.590L240.694,129.028L241.156,127.459L241.593,125.882L242.003,124.298L242.388,122.708L242.746,121.111L243.079,119.509L243.385,117.902L243.664,116.290L243.918,114.673L244.144,113.053L244.345,111.429L244.518,109.802L244.666,108.172L244.786,106.540L244.880,104.907L244.946,103.272L244.987,101.636L245.000,100.000L244.987,98.364L244.946,96.728L244.880,95.093ZM360.000,280.000L447.500,280.000L447.500,0.000L360.000,0.000L360.000,92.500L262.500,92.500L262.500,170.000L360.000,170.000ZM105.000,270.000L105.000,297.500L52.500,297.500L52.500,345.000L105.000,345.000L192.500,345.000L337.500,345.000L337.500,355.000L52.500,355.000L52.500,402.500L52.500,465.000L140.000,465.000L450.000,465.000L450.000,417.500L140.000,417.500L140.000,402.500L337.500,402.500L442.500,402.500L442.500,345.000L442.500,297.500L192.500,297.500L192.500,270.000L325.000,270.000L325.000,205.000L0.000,205.000L0.000,270.000ZM665.000,25.000L520.000,25.000L520.000,102.500L520.000,270.000L597.500,270.000L665.000,270.000L665.000,192.500L597.500,192.500L597.500,102.500L665.000,102.500ZM830.000,25.000L685.000,25.000L685.000,102.500L685.000,270.000L762.500,270.000L830.000,270.000L830.000,192.500L762.500,192.500L762.500,102.500L830.000,102.500ZM850.000,0.000L850.000,345.000L937.500,345.000L937.500,202.500L1000.000,202.500L1000.000,125.000L937.500,125.000L937.500,0.000ZM945.000,465.000L945.000,387.500L625.000,387.500L625.000,305.000L537.500,305.000L537.500,465.000L625.000,465.000Z"/></svg>
+    <dl id="biz"></dl>
+    <div class="flinks">
+      <a href="#" data-link="terms">이용약관</a>
+      <a href="#" class="b" data-link="privacy">개인정보처리방침</a>
+      <a href="#refund">환불정책</a>
+    </div>
+    <p>VELA에는 생성형 AI가 쓰입니다(손님 대사 일부 · 말하기 판정 · 캐릭터 그림).</p>
+    <p style="margin-top:2px">© 월딴</p>
+  </div>
+</footer>
+
+<script>
+{
+/* 확정되지 않은 값은 비워 두면 화면에 '준비 중'으로 나옵니다. */
+const CFG = {
+  season: 'auto',                       // auto | winter | spring | summer | autumn | base
+  gameUrl: 'https://vela.wolddan.com/game',
+  payUrl: '',                           // 통신판매업 신고 후 결제 링크
+  formEndpoint: '',                     // 상담 신청 저장 주소(준비되면)
+  students: '200명 이상',
+  validity10: '결제일부터 100일', validity20: '결제일부터 100일',
+  noShow: '수강권 1회를 씁니다.',
+  retention: '상담 종료 후 6개월, 이후 파기',
+  biz: {
+    '상호': '월딴', '대표자': '김민영', '사업자등록번호': '492-42-01208',
+    '통신판매업 신고번호': '제2026-전주덕진-0892호',
+    '주소': '전북특별자치도 전주시 덕진구 오공로 123, 9층 905호 (만성동, 전북테크비즈센터)',
+    '이메일': 'contact@wolddan.com', '전화': '070-8098-7073', '호스팅 제공자': 'Cloudflare, Inc.'
+  },
+  links: { terms: '', privacy: '' }
+};
+const READY = '준비 중';
+const $ = s => document.querySelector(s);
+
+const m = new Date().getMonth() + 1;
+const season = CFG.season !== 'auto' ? CFG.season : (m >= 3 && m <= 5) ? 'spring' : (m >= 6 && m <= 8) ? 'summer' : (m >= 9 && m <= 10) ? 'autumn' : 'winter';
+if (season !== 'winter') document.documentElement.dataset.season = season;
+
+/* 달 위상: 0 삭 → 4 보름, 왼쪽에서 오른쪽으로 차오름 */
+const moon = k => {
+  const f = k / 4, r = 18, c = 20;
+  let lit = '';
+  if (k === 4) lit = `<circle cx="${c}" cy="${c}" r="${r}" fill="currentColor"/>`;
+  else if (k > 0) {
+    const rx = Math.abs(1 - 2 * f) * r, sweep = f < .5 ? 0 : 1;
+    lit = `<path d="M${c} ${c - r}A${r} ${r} 0 0 1 ${c} ${c + r}A${rx} ${r} 0 0 ${sweep} ${c} ${c - r}Z" fill="currentColor"/>`;
+  }
+  return `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="currentColor" stroke-width="2"/>${lit}</svg>`;
+};
+document.querySelectorAll('[data-moon]').forEach(e => {
+  e.innerHTML = moon(+e.dataset.moon);
+  const name = e.dataset.icon; if (!name) return;
+  const im = new Image(); im.alt = ''; im.onload = () => { e.innerHTML = ''; e.appendChild(im); }; im.src = `img/icon-${name}.webp`;
+});
+/* 아직 없는 이미지는 자리를 지운다 */
+const tidy = () => document.querySelectorAll('[data-optgroup]').forEach(g => { if (!g.querySelector('[data-optbox]')) g.remove(); });
+document.querySelectorAll('img[data-opt]').forEach(img => {
+  const kill = () => { img.closest('[data-optbox]')?.remove(); tidy(); };
+  if (img.complete && img.naturalWidth === 0) kill(); else img.addEventListener('error', kill);
+});
+const kv = document.querySelector('[data-kv]');
+if (kv) { const off = () => kv.remove(); if (kv.complete && kv.naturalWidth === 0) off(); else kv.addEventListener('error', off); }
+document.querySelectorAll('.moons').forEach(e => {
+  const n = +e.dataset.count;
+  e.innerHTML = Array.from({ length: n }, (_, i) => moon(Math.min(4, Math.round(i / (n - 1) * 4)))).join('');
+});
+
+/* 빈 슬롯 */
+document.querySelectorAll('[data-cfg]').forEach(e => { const v = CFG[e.dataset.cfg]; e.textContent = v || READY; if (!v) e.classList.add('empty'); });
+{ const fs = $('#f-students'); if (fs) fs.textContent = CFG.students || READY; }
+$('#biz').innerHTML = Object.entries(CFG.biz).map(([k, v]) => `<span class="bi${k === '주소' ? ' wrap' : ''}"><dt>${k}</dt><dd${v ? '' : ' class="empty"'}>${v || READY}</dd></span>`).join('');
+document.querySelectorAll('[data-link]').forEach(a => {
+  const u = CFG.links[a.dataset.link];
+  if (u) a.href = u; else { a.removeAttribute('href'); a.setAttribute('aria-disabled', 'true'); a.title = READY; a.textContent += ' (준비 중)'; }
+});
+
+/* 버튼 */
+const arm = (id, url) => { const a = $(id); if (url) { a.href = url; a.removeAttribute('aria-disabled'); } };
+arm('#cta-game', CFG.gameUrl); arm('#cta-game2', CFG.gameUrl);
+const canPay = CFG.payUrl && CFG.biz['통신판매업 신고번호'];
+if (canPay) arm('#cta-pay', CFG.payUrl);
+$('#pay-note').textContent = canPay ? '결제 직후 계약 내용과 환불 규칙을 이메일로 보내 드립니다.' : '카드 결제는 준비 중입니다. 지금은 상담 후 안내해 드립니다.';
+document.querySelectorAll('[aria-disabled=true]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+
+/* 상담 폼 */
+const f = $('#f'), err = $('#err');
+f.addEventListener('submit', async e => {
+  e.preventDefault();
+  const v = { 이름: $('#nm').value.trim(), 휴대폰: $('#ph').value.trim(), 희망시간: $('#tm').value, 장면: $('#sc').value.trim() };
+  const miss = [];
+  if (!v.이름) miss.push('이름'); if (!/^0\d{1,2}-?\d{3,4}-?\d{4}$/.test(v.휴대폰)) miss.push('휴대폰 번호'); if (!v.희망시간) miss.push('상담 희망 시간');
+  if (!$('#a19').checked) miss.push('만 19세 이상 확인'); if (!$('#apv').checked) miss.push('개인정보 수집·이용 동의');
+  if (miss.length) { err.textContent = `${miss.join(', ')}을(를) 확인해 주세요.`; return; }
+  err.textContent = '';
+  const text = `[VELA Play 상담 신청]\n이름: ${v.이름}\n휴대폰: ${v.휴대폰}\n희망 시간: ${v.희망시간}\n막혔던 장면: ${v.장면 || '-'}\n문자 소식 수신: ${$('#amk').checked ? '동의' : '동의 안 함'}`;
+  if (CFG.formEndpoint) {
+    try { const r = await fetch(CFG.formEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...v, marketing: $('#amk').checked }) });
+      if (!r.ok) throw 0; f.hidden = true; $('#out-msg').textContent = '신청을 받았습니다. 하루 안에 연락드립니다.'; $('#out-text').textContent = ''; $('#copy').hidden = true; $('#out').classList.add('on'); return;
+    } catch (_) { err.textContent = '전송하지 못했습니다. 아래 내용을 복사해 이메일로 보내 주세요.'; }
+  }
+  $('#out-msg').textContent = '온라인 접수는 준비 중입니다. 아래 내용을 복사해 contact@wolddan.com 으로 보내 주세요.';
+  $('#out-text').textContent = text; $('#out').classList.add('on');
+});
+$('#copy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('#out-text').textContent); $('#copy').textContent = '복사했습니다'; } catch (_) { $('#copy').textContent = '길게 눌러 직접 복사해 주세요'; }
+});
+
+/* 겨울 눈 — 움직임 줄이기 설정이면 멈춤 */
+const cv = $('#snow'), ctx = cv.getContext('2d');
+const still = matchMedia('(prefers-reduced-motion: reduce)').matches || season !== 'winter';
+let flakes = [], W = 0, H = 0;
+const size = () => { const d = devicePixelRatio || 1; W = cv.clientWidth; H = cv.clientHeight; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+  flakes = Array.from({ length: season === 'winter' ? Math.round(W / 9) : 0 }, (_, i) => ({ x: (i * 97) % W, y: (i * 53) % H, r: 1 + (i % 3) * .6, s: .25 + (i % 5) * .08 })); draw(); };
+const draw = () => { ctx.clearRect(0, 0, W, H); ctx.fillStyle = 'rgba(237,242,250,.75)'; for (const p of flakes) { ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill(); } };
+const tick = () => { for (const p of flakes) { p.y += p.s; p.x += Math.sin(p.y / 30) * .15; if (p.y > H) { p.y = -4; } } draw(); requestAnimationFrame(tick); };
+const ro = new ResizeObserver(size); ro.observe(cv);
+if (!still) requestAnimationFrame(tick);
+}
+
+(() => { const els=document.querySelectorAll('.band>.wrap>*, .hero figure'); if(!('IntersectionObserver' in window)) return;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }),{rootMargin:'0px 0px -8% 0px'});
+  els.forEach(el=>{ el.classList.add('reveal'); io.observe(el); }); })();
+
+(() => { const d=document.getElementById('curri'), b=document.getElementById('curri-btn'); if(!d||!b) return;
+  b.addEventListener('click',()=>{ if(d.showModal) d.showModal(); else d.setAttribute('open',''); });
+  d.addEventListener('click',e=>{ if(e.target===d||e.target.closest('[data-close]')) d.close(); });
+})();
+</script>
+</body>
+</html>
