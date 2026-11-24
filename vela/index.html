@@ -341,10 +341,26 @@ p,li,dd{max-width:65ch}
 .curri dt{font-size:13px;color:var(--muted)}
 .curri dd{margin:2px 0 0;font-size:15px}
 .sheet-foot{color:var(--muted);font-size:14px;margin-top:20px}
+.sub-h{font-size:17px;margin-top:28px}
+.per{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
+@media(min-width:760px){.per{grid-template-columns:1fr 1fr}}
+.per li{padding:14px 16px;border-radius:var(--r-sm);background:color-mix(in srgb,var(--ink) 5%,var(--bg))}
+.per b{display:block;font-size:16px}
+.per span{display:block;font-size:14px;color:var(--muted);margin-top:4px;line-height:1.55}
+.per i,.road i{font-style:normal;color:var(--ink)}
+.road{list-style:none;padding:0;margin:12px 0 10px}
+.road li{display:grid;grid-template-columns:4.5em 1fr auto;gap:12px;align-items:baseline;padding:12px 0;border-top:1px solid var(--line)}
+.road b{font-size:14px;color:var(--accent)}
+.road span{font-size:15px}
+.road em{font-style:normal;font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.lb{margin:20px 0 0}
+.lb div{display:grid;grid-template-columns:4.5em 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.lb dt{font-size:14px;font-weight:700;color:var(--accent)}
+.lb dd{margin:0;font-size:15px;color:var(--muted)}
 .sheet .btn.pri{width:100%;margin-top:14px}
 @media(prefers-reduced-motion:reduce){.sheet[open],.sheet[open]::backdrop{animation:none}}
 .curri .tag{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.prem{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 8px;border-radius:980px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#1a1408;background:linear-gradient(135deg,#F3DFA2,#D9B65E 55%,#F6E7B8);box-shadow:0 0 14px rgba(230,196,110,.35)}
+.prem{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 8px;border-radius:980px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#0A1020;background:linear-gradient(135deg,#DCE8FF,#94B8FF 55%,#E6EEFF);box-shadow:0 0 14px rgba(148,184,255,.35)}
 .prem svg{width:12px;height:12px}
 @media(min-width:880px){.scene canvas{-webkit-mask-image:linear-gradient(to right,transparent 0,transparent 30%,#000 44%);mask-image:linear-gradient(to right,transparent 0,transparent 30%,#000 44%)}}
 /* 화면에 들어올 때 살짝 떠오름 */
@@ -482,7 +498,8 @@ p,li,dd{max-width:65ch}
           <div><dt>하는 것</dt><dd>게임 + 1:1 화상 수업 30분, 회차권</dd></div>
           <div><dt>일정</dt><dd>평일 중 원하는 때, 100일 안에</dd></div>
           <div><dt>수업 내용</dt><dd>게임 속 그날의 장면 그대로</dd></div>
-          <div><dt>복습</dt><dd>로그북 앱 · 운전 중 듣는 오디오</dd></div>
+          <div><dt>로그북</dt><dd>회차마다 복습 · 문법 · 단어 화면 제작</dd></div>
+          <div><dt>운전 중</dt><dd>화면 없이 듣고 따라 말하는 오디오</dd></div>
           <div><dt>비용</dt><dd>상담 후 안내</dd></div>
         </dl>
         <a class="btn pri" href="#consult">20분 무료 상담 신청</a>
@@ -514,8 +531,14 @@ p,li,dd{max-width:65ch}
       <div>
         <span class="ico sm" data-moon="4" data-icon="logbook"></span>
         <h3>수업이 끝나면 로그북으로</h3>
-        <p style="color:var(--muted);margin-top:12px;font-size:16px">그날 배운 문장과 단어 10개가 휴대폰 복습으로 바로 들어옵니다. 출퇴근길에는 화면을 보지 않고 듣고 따라 말할 수 있습니다.</p>
-        <div class="tags"><span>표현</span><span>대화</span><span>단어 10개</span><span>Review for CAR driver</span></div>
+        <p style="color:var(--muted);margin-top:12px;font-size:16px">선생님이 그날 수업으로 로그북 화면을 만들어 휴대폰에 넣어 드립니다. 출퇴근길에는 화면을 보지 않고 듣고 따라 말할 수 있습니다.</p>
+        <dl class="lb">
+          <div><dt>복습</dt><dd>오늘의 표현과 장면 대화. 손님과 화상통화하듯 다시 말해 봅니다.</dd></div>
+          <div><dt>문법</dt><dd>그날 수업의 POINT 하나. 공식 한 줄과 예문으로 정리합니다.</dd></div>
+          <div><dt>단어</dt><dd>그날 배운 단어 10개. 뜻을 보고 영어로 쳐서 맞힙니다.</dd></div>
+          <div><dt>캘린더</dt><dd>수업 일정과 숙제 기록을 한곳에서 봅니다.</dd></div>
+        </dl>
+        <div class="tags"><span>Review for CAR driver</span></div>
       </div>
     </div>
   </div>
@@ -557,6 +580,20 @@ p,li,dd{max-width:65ch}
       <div class="sheet-in">
         <div class="sheet-head"><h2 id="curri-t">커리큘럼 안내</h2><button type="button" class="x" data-close aria-label="닫기">×</button></div>
         <p class="sheet-lead">두 과정 모두 30분 1:1 화상 수업이고, 수강권(10회·20회)은 같습니다. 무엇으로 수업하느냐가 다릅니다.</p>
+        <h3 class="sub-h">한 회차에 배우는 것</h3>
+        <ul class="per">
+          <li><b>표현 4개</b><span>단어를 바꿔 끼워 여러 상황에 쓰는 틀. 예: <i lang="en">Is ___ included?</i></span></li>
+          <li><b>장면 대화 1개</b><span>대본 보고, 빈칸 채우고, 안 보고. 세 번 말합니다.</span></li>
+          <li><b>문법 POINT 1개</b><span>예: 시각 앞 at, 요일 앞 on / <i lang="en">did + 동사원형</i></span></li>
+          <li><b>단어 10개</b><span>낱말이 아니라 <i lang="en">at five</i>, <i lang="en">get you a towel</i>처럼 덩어리로</span></li>
+        </ul>
+        <h3 class="sub-h">BASIC 장면 순서</h3>
+        <ol class="road">
+          <li><b>1묶음</b><span>체크인 · 아침 식사와 마루의 밤 · 길 묻는 손님 · 옥상 빨래</span><em>DRILL</em></li>
+          <li><b>2묶음</b><span>체크아웃 · 비 오는 밤 늦은 손님 · 청소 시간 · 못 먹는 음식이 있는 손님</span><em>DRILL</em></li>
+          <li><b>3묶음</b><span>철물점에서 말 전하기 · 해 질 녘 옥상 · 언덕 나들이 · 다시 만날 약속</span><em>DRILL</em></li>
+        </ol>
+        <p class="note">10회권은 두 묶음, 20회권은 네 묶음과 한 번을 더 합니다. 장면은 게임에 새 날짜가 열리는 순서를 따르므로 바뀔 수 있습니다. 표현 칸에는 실제로 많이 쓰는 구동사·생활 표현을 우선 넣습니다.</p>
         <div class="curri">
           <article>
             <p class="tag">BASIC</p>
@@ -566,7 +603,7 @@ p,li,dd{max-width:65ch}
               <div><dt>수업 자료</dt><dd>VELA에서 그날 지난 장면(DAY)을 그대로 씁니다. 게임에서 만난 손님, 같은 대사로 연습합니다.</dd></div>
               <div><dt>진행</dt><dd>새 장면 4회 + 다시 말하기(DRILL) 1회가 한 묶음입니다.</dd></div>
               <div><dt>30분 구성</dt><dd>지난 시간 복습 → 오늘의 표현 4개 → 장면 대화(대본 보고 → 빈칸 → 안 보고) → 다시 복습 → 빙고</dd></div>
-              <div><dt>복습</dt><dd>수업이 끝나면 그날 문장과 단어가 로그북 앱으로 들어오고, 운전 중에는 듣고 따라 말할 수 있습니다.</dd></div>
+              <div><dt>로그북</dt><dd>회차마다 복습 · 문법 · 단어 화면을 만들어 로그북 앱에 넣어 드립니다. 운전 중에는 듣고 따라 말하는 오디오로 복습합니다.</dd></div>
             </dl>
           </article>
           <article class="hl">
@@ -577,7 +614,7 @@ p,li,dd{max-width:65ch}
               <div><dt>수업 자료</dt><dd>상담에서 들은 내 장면으로 대화문과 표현을 따로 만듭니다.</dd></div>
               <div><dt>진행</dt><dd>BASIC과 같은 틀(표현 4개 · 장면 대화 · 다시 복습)에 내 장면을 넣습니다.</dd></div>
               <div><dt>30분 구성</dt><dd>BASIC과 같습니다. 장면만 내 것으로 바뀝니다.</dd></div>
-              <div><dt>복습</dt><dd>내 장면의 문장도 로그북 앱으로 들어옵니다.</dd></div>
+              <div><dt>로그북</dt><dd>내 장면의 표현과 대화로 복습 · 문법 · 단어 화면을 따로 만듭니다. 운전 중 오디오도 내 장면으로 나갑니다.</dd></div>
             </dl>
           </article>
         </div>
@@ -690,7 +727,7 @@ p,li,dd{max-width:65ch}
 {
 /* 확정되지 않은 값은 비워 두면 화면에 '준비 중'으로 나옵니다. */
 const CFG = {
-  season: 'auto',                       // auto | winter | spring | summer | autumn | base
+  season: 'winter',                     // auto | winter | spring | summer | autumn | base  (2026-11-24: 가을 옐로우 대신 겨울 남색·하늘색으로 고정)
   gameUrl: 'https://vela.wolddan.com/game',
   payUrl: '',                           // 통신판매업 신고 후 결제 링크
   formEndpoint: 'https://script.google.com/macros/s/AKfycbz-YX5jWhxRsEZrQbRInlozwF1EXghiwm684fxVEgKathiwdkHuqQzCts0Xp1T50FTfuA/exec',                     // 상담 신청 저장 주소(준비되면)
