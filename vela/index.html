@@ -360,7 +360,7 @@ p,li,dd{max-width:65ch}
 .sheet .btn.pri{width:100%;margin-top:14px}
 @media(prefers-reduced-motion:reduce){.sheet[open],.sheet[open]::backdrop{animation:none}}
 .curri .tag{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.prem{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 8px;border-radius:980px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#1a1408;background:linear-gradient(135deg,#F3DFA2,#D9B65E 55%,#F6E7B8);box-shadow:0 0 14px rgba(230,196,110,.35)}
+.prem{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 8px;border-radius:980px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#0A1020;background:linear-gradient(135deg,#DCE8FF,#94B8FF 55%,#E6EEFF);box-shadow:0 0 14px rgba(148,184,255,.35)}
 .prem svg{width:12px;height:12px}
 @media(min-width:880px){.scene canvas{-webkit-mask-image:linear-gradient(to right,transparent 0,transparent 30%,#000 44%);mask-image:linear-gradient(to right,transparent 0,transparent 30%,#000 44%)}}
 /* 화면에 들어올 때 살짝 떠오름 */
@@ -727,7 +727,7 @@ p,li,dd{max-width:65ch}
 {
 /* 확정되지 않은 값은 비워 두면 화면에 '준비 중'으로 나옵니다. */
 const CFG = {
-  season: 'auto',                       // auto | winter | spring | summer | autumn | base
+  season: 'winter',                     // auto | winter | spring | summer | autumn | base  (2026-11-24: 가을 옐로우 대신 겨울 남색·하늘색으로 고정)
   gameUrl: 'https://vela.wolddan.com/game',
   payUrl: '',                           // 통신판매업 신고 후 결제 링크
   formEndpoint: 'https://script.google.com/macros/s/AKfycbz-YX5jWhxRsEZrQbRInlozwF1EXghiwm684fxVEgKathiwdkHuqQzCts0Xp1T50FTfuA/exec',                     // 상담 신청 저장 주소(준비되면)
