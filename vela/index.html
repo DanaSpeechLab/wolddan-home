@@ -803,5 +803,29 @@ if (!still) requestAnimationFrame(tick);
   d.addEventListener('click',e=>{ if(e.target===d||e.target.closest('[data-close]')) d.close(); });
 })();
 </script>
+<script>
+/* 방문 한 줄 기록 — 누가 어디서 들어오는지 보려고 (functions/api/visit.js). 쿠키 없음, 탭 단위 난수만. */
+(function(){
+  try {
+    var K = 'wolddan.visit.session', key = null, fresh = false;
+    try { key = sessionStorage.getItem(K); } catch (e) {}
+    if (!key) {
+      fresh = true;
+      key = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+      try { sessionStorage.setItem(K, key); } catch (e) {}
+    }
+    var ref = null, utm = null;
+    if (fresh) {
+      try { var h = document.referrer ? new URL(document.referrer).hostname : ''; if (h && h !== location.hostname) ref = h; } catch (e) {}
+      var q = new URLSearchParams(location.search);
+      utm = { source: q.get('utm_source'), medium: q.get('utm_medium'), campaign: q.get('utm_campaign') };
+    }
+    fetch('/api/visit', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+      body: JSON.stringify({ sessionKey: key, path: location.pathname, referrerHost: ref, displayMode: 'browser', utm: utm })
+    }).catch(function(){});
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>
